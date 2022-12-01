@@ -1,10 +1,9 @@
-<img src="./.assets/christmas_ferris.png" width="164">
+<img src="./assets/christmas_ferris.png" width="164">
 
 # 🎄 Advent of Code 2022
+![Language](https://badgen.net/badge/Language/Rust/orange)
 
 Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.rust-lang.org/).
-
-<!--- advent_readme_stars table --->
 ## 2022 Results
 
 | Day | Part 1 | Part 2 |
