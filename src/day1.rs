@@ -54,16 +54,28 @@ pub fn part1(input: &[i32]) -> i32 {
 }
 
 
-
+/// By the time you calculate the answer to the Elves' question, they've already realized that the Elf carrying the most Calories of food might eventually run out of snacks.
+///
+// To avoid this unacceptable situation, the Elves would instead like to know the total Calories carried by the top three Elves carrying the most Calories. That way, even if one of those Elves runs out of snacks, they still have two backups.
+/// 
+/// In the example above, the top three Elves are the fourth Elf (with 24000 Calories), then the third Elf (with 11000 Calories), then the fifth Elf (with 10000 Calories). The sum of the Calories carried by these three elves is 45000.
+/// Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total?
 #[aoc(day1, part2)]
 pub fn part2(input: &[i32]) -> i32 {
-    let mut sliding_sum: Vec<i32> = Vec::new();
-    for i in 0..input.len() - 2 {
-        sliding_sum.push(input[i] + input[i + 1] + input[i + 2]);
-    }
+    let mut calories = input
+    .to_vec()
+    .split(|entry| *entry==0)
+    .map(|x| x.into_iter().sum::<i32>())
+    .collect::<Vec<i32>>();
 
-    part1(&sliding_sum)
-        
+    calories.sort();
+    calories.reverse();
+
+    calories
+    .iter()
+    .take(3)
+    .sum()
+
 }
 
 #[cfg(test)]
@@ -125,15 +137,21 @@ mod tests {
 
     #[test]
     fn test_part2()  {
-        assert_eq!(part2(&[199 ,
-200, 
-208, 
-210, 
-200, 
-207, 
-240, 
-269, 
-260, 
-263]), 5);
+        assert_eq!(part2(&[
+            1000, 
+            2000,
+            3000,
+            0,
+            4000,
+            0,
+            5000,
+            6000,
+            0,
+            7000,
+            8000,
+            9000,
+            0,
+            10000
+            ]), 45000);
     }
 }
