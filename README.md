@@ -1,13 +1,19 @@
-# Advent of Code
+<img src="./.assets/christmas_ferris.png" width="164">
 
-My implementation of the Advent of Code for 2022. I use the aoc-runner cli to execute the code
+# 🎄 Advent of Code 2022
 
+Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.rust-lang.org/).
+
+<!--- advent_readme_stars table --->
 ---
 **NOTE**
 
 This only can handle 2022 due to a limitation of the aoc-runner
 
 ---
+## Progress
+
+| Day 1 | 
 
 ## Dependancies
 
