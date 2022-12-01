@@ -1,4 +1,3 @@
-
 use aoc_runner_derive::aoc;
 use aoc_runner_derive::aoc_generator;
 
@@ -7,7 +6,13 @@ pub fn input_generator(input: &str) -> Vec<i32> {
     input
         .lines()
         .map(|l| 
-            l.parse::<i32>().unwrap_or_default() ).collect()
+            l.parse::<i32>().unwrap_or_default() )
+        .collect::<Vec<i32>>()
+    .to_vec()
+    .split(|entry| *entry==0)
+    .map(|x| x.iter().sum::<i32>())
+    .collect()
+    
 }
 
 /// --- Day 1: Calorie Counting ---
@@ -47,10 +52,10 @@ pub fn input_generator(input: &str) -> Vec<i32> {
 /// Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
 #[aoc(day1, part1)]
 pub fn part1(input: &[i32]) -> i32 {
-    input
-    .to_vec()
-    .split(|entry| *entry==0)
-    .map(|x| x.iter().sum::<i32>()).max().unwrap()
+    *input
+    .iter()
+    .max().unwrap()
+    
 }
 
 
@@ -62,11 +67,7 @@ pub fn part1(input: &[i32]) -> i32 {
 /// Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total?
 #[aoc(day1, part2)]
 pub fn part2(input: &[i32]) -> i32 {
-    let mut calories = input
-    .to_vec()
-    .split(|entry| *entry==0)
-    .map(|x| x.iter().sum::<i32>())
-    .collect::<Vec<i32>>();
+    let mut calories: Vec<i32> = input.into();
 
     calories.sort();
     calories.reverse();
