@@ -7,7 +7,7 @@ pub fn input_generator(input: &str) -> Vec<i32> {
     input
         .lines()
         .map(|l| 
-          l.parse::<i32>().unwrap_or_default() ).collect()
+            l.parse::<i32>().unwrap_or_default() ).collect()
 }
 
 /// --- Day 1: Calorie Counting ---
@@ -50,7 +50,7 @@ pub fn part1(input: &[i32]) -> i32 {
     input
     .to_vec()
     .split(|entry| *entry==0)
-    .map(|x| x.into_iter().sum::<i32>()).max().unwrap()
+    .map(|x| x.iter().sum::<i32>()).max().unwrap()
 }
 
 
@@ -65,7 +65,7 @@ pub fn part2(input: &[i32]) -> i32 {
     let mut calories = input
     .to_vec()
     .split(|entry| *entry==0)
-    .map(|x| x.into_iter().sum::<i32>())
+    .map(|x| x.iter().sum::<i32>())
     .collect::<Vec<i32>>();
 
     calories.sort();
