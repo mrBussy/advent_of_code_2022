@@ -11,10 +11,6 @@ Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.
 This only can handle 2022 due to a limitation of the aoc-runner
 
 ---
-## Progress
-
-| Day 1 | 
-
 ## Dependancies
 
 Add Clippy for Cargo.
