@@ -103,38 +103,23 @@ Priorities for these items must still be found to organize the sticker attachmen
 Find the item type that corresponds to the badges of each three-Elf group. What is the sum of the priorities of those item types?
 
 */
-fn diff_part2(line1: &str, line2: &str, line3: &str) -> i32 {
-
-    for left_char in line1.chars() {
-        if line2.contains(left_char) && line3.contains(left_char) {
-            if left_char.is_uppercase() {
-                return (left_char as i32) - ('A' as i32) + 27 //  27..52
-            }
-            else {
-                return (left_char as i32) - ('a' as i32) + 1  // 1..26
-            }
-        }
-    };
-
-    0
-}
 
 #[aoc(day3, part2)]
 pub fn part2(input: &str) -> Option<i32> {
 
-    let mut lines= input.lines().peekable().clone();
-    let mut val: i32=0;
-
-    while lines.peek().is_some() {
-        let line1 = lines.next();
-        let line2 = lines.next();
-        let line3 = lines.next();
-
-        val += diff_part2(line1.unwrap(), line2.unwrap(), line3.unwrap());
-
-    }
-
-    Some(val)
+    Some(input
+    .lines()
+    .collect::<Vec<_>>()
+    .chunks(3)
+    .map(|set| set[0].chars()
+        .find(|b| set[1].contains(*b) && set[2].contains(*b))
+        .unwrap())
+    .map(|b| if b as u8 >= b'a' {
+        (b as u8 - b'a') as i32 + 1
+    } else {
+        (b as u8 - b'A') as i32 + 27
+    })
+    .sum())
 
 }
 
