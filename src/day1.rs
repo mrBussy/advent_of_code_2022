@@ -1,6 +1,7 @@
 
 use aoc_runner_derive::aoc;
 use aoc_runner_derive::aoc_generator;
+use itertools::Itertools;
 
 #[aoc_generator(day1)]
 pub fn input_generator(input: &str) -> Vec<i32> {
@@ -48,9 +49,14 @@ pub fn input_generator(input: &str) -> Vec<i32> {
 #[aoc(day1, part1)]
 pub fn part1(input: &[i32]) -> i32 {
     input
-    .to_vec()
     .split(|entry| *entry==0)
-    .map(|x| x.iter().sum::<i32>()).max().unwrap()
+    .map(|x| 
+        x
+        .iter()
+        .sum::<i32>()
+    )
+    .max()
+    .unwrap()
 }
 
 
@@ -62,20 +68,13 @@ pub fn part1(input: &[i32]) -> i32 {
 /// Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total?
 #[aoc(day1, part2)]
 pub fn part2(input: &[i32]) -> i32 {
-    let mut calories = input
-    .to_vec()
+    input
     .split(|entry| *entry==0)
     .map(|x| x.iter().sum::<i32>())
-    .collect::<Vec<i32>>();
-
-    calories.sort();
-    calories.reverse();
-
-    calories
-    .iter()
+    .sorted()
+    .rev()
     .take(3)
     .sum()
-
 }
 
 #[cfg(test)]
