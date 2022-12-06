@@ -1,5 +1,6 @@
 use aoc_runner_derive::aoc;
 use aoc_runner_derive::aoc_generator;
+use itertools::Itertools;
 
 /*
     (1 for Rock, 2 for Paper, and 3 for Scissors)
@@ -9,21 +10,15 @@ pub fn input_generator(input: &str) -> Vec<(usize, usize)> {
     input
     .lines()
     .map(|line| {
-        let mut token =line.split_ascii_whitespace();
-
-        (match token.next(){
-            Some("A") => 1,
-            Some("B") => 2,
-            Some("C") => 3,
+        line.split_ascii_whitespace().map(|token| 
+            match token {
+            "A" | "X" => 1,
+            "B" | "Y" => 2,
+            "C" | "Z" => 3,
             _ => 0
-        }, 
-        match token.next(){
-            Some("X") => 1,
-            Some("Y") => 2,
-            Some("Z") => 3,
-            _ => 0
-        }
-        )
+            })
+            .collect_tuple::<(usize, usize)>()
+            .unwrap()
     }
     ).collect()
 }
