@@ -18,7 +18,7 @@ impl PartialEq for Ship {
 #[aoc_generator(day5)]
 pub fn input_generator(input: &str) -> Result<Ship, &'static str> {
 
-    let mut build_moves: Vec<(i8, i8, i8)> = vec![];
+    let mut moves: Vec<(i8, i8, i8)> = vec![];
     let mut stacks: Vec<Vec<char>> = vec![vec![]];
     let move_regex = Regex::new(r"^move\s(\d+)\sfrom\s(\d+)\sto\s(\d+).*").unwrap();
 
@@ -29,7 +29,7 @@ pub fn input_generator(input: &str) -> Result<Ship, &'static str> {
             // Moves
             if move_regex.captures(line).is_some() {
 
-                build_moves.push(
+                moves.push(
                     (
                         move_regex.captures(line).unwrap().get(1).map(|value| value.as_str().parse::<i8>().expect("value")).unwrap(),
                         move_regex.captures(line).unwrap().get(2).map(|value| value.as_str().parse::<i8>().expect("value")).unwrap(),
@@ -65,7 +65,7 @@ pub fn input_generator(input: &str) -> Result<Ship, &'static str> {
         }
     );
 
-    Ok(Ship { stacks: stacks, moves: build_moves })
+    Ok(Ship { stacks, moves })
 }
 
 #[aoc(day5, part1)]

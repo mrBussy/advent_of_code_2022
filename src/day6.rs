@@ -1,11 +1,13 @@
 use aoc_runner_derive::aoc;
 use itertools::Itertools;
 
+// Function optimized using the https://github.com/Whipshout/advent-of-code-2022-rust/blob/master/src/bin/06.rs implementation.
+
 fn find_start(input: &[u8], len: usize) -> Option<i32> {
     Some((input
     .windows(len)
     .enumerate()
-    .find(|(_, window)| window.iter().all_unique() )
+    .find(|(_, window)| window.iter().tuple_combinations().all(|(&a, &b)| a != b ))
     .unwrap()
     .0 
      + len) as i32
