@@ -1,0 +1,4 @@
+[toolchain]
+channel = "stable-x86_64-apple-darwin"
+components = [ "rustfmt", "rustc-dev" ]
+profile = "minimal"

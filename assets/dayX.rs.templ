@@ -1,0 +1,39 @@
+use aoc_runner_derive::aoc;
+use aoc_runner_derive::aoc_generator;
+
+#[aoc_generator(day6)]
+pub fn input_generator(input: &str) -> i32 {
+    0
+}
+
+#[aoc(day6, part1)]
+pub fn part1(&input: &i32) -> Option<i32> {
+    None
+}
+
+#[aoc(day6, part2)]
+pub fn part2(input: &i32) -> Option<i32> {
+    None
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::{input_generator, part1, part2};
+
+    #[test]
+    fn test_input() {
+        assert_eq!(input_generator(
+""
+        ), 2)
+    }
+
+        
+    #[test]
+    pub fn test_part1() {
+        assert_eq!(part1(
+            ""),
+            Some(String::from("CMZ")))
+    }
+
+}
