@@ -71,7 +71,7 @@ fn parse_command(i: &str) -> IResult<&str, Command> {
 #[derive(Debug)]
 enum Entry {
     Dir(Utf8PathBuf),
-    File(u64, Utf8PathBuf),
+    File(u64),
 }
 
 // If the given input starts with a integer then take that as a file _ size
@@ -79,7 +79,7 @@ enum Entry {
 fn parse_entry(i: &str) -> IResult<&str, Entry> {
     let parse_file = map(
         separated_pair(nom::character::complete::u64, tag(" "), parse_path),
-        |(size, path)| Entry::File(size, path),
+        |(size, _)| Entry::File(size),
     );
     let parse_dir = map(preceded(tag("dir "), parse_path), Entry::Dir);
 
@@ -100,7 +100,7 @@ fn parse_line(i: &str) -> IResult<&str, Line> {
 }
 #[derive(Debug)]
 struct FsEntry {
-    path: Utf8PathBuf,
+    //path: Utf8PathBuf,
     size: u64,
     children: Vec<FsEntry>,
 }
@@ -116,16 +116,16 @@ impl FsEntry {
                     ".." => break,
                     _ => self.children.push(
                         FsEntry {
-                            path: sub.clone(),
+                            //path: sub.clone(),
                             size: 0,
                             children: vec![],
                         }
                         .build(it),
                     ),
                 },
-                Line::Entry(Entry::File(size, path)) => {
+                Line::Entry(Entry::File(size)) => {
                     self.children.push(FsEntry {
-                        path,
+                        //path,
                         size,
                         children: vec![],
                     });
@@ -161,7 +161,7 @@ pub fn part1(input: &str) -> Option<u64> {
     .map(|l| all_consuming(parse_line)(l).finish().unwrap().1);
 
     let root = FsEntry {
-        path: "/".into(),
+        //path: "/".into(),
         size: 0,
         children: vec![],
     }
@@ -187,7 +187,7 @@ pub fn part2(input: &str) -> Option<u64> {
     .map(|l| all_consuming(parse_line)(l).finish().unwrap().1);
 
     let root = FsEntry {
-        path: "/".into(),
+        //path: "/".into(),
         size: 0,
         children: vec![],
     }
