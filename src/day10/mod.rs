@@ -1,5 +1,8 @@
+use std::vec;
+
 use aoc_runner_derive::{aoc_generator, aoc};
 use nom::{bytes::complete::{tag_no_case, tag}, combinator::{map, value}, branch::alt, sequence::preceded, IResult};
+mod tests;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Instruction {
@@ -38,12 +41,54 @@ impl Instruction {
 #[derive(Clone, Copy, Debug)]
 pub struct MachineState {
     cycle: u64,
-    register_x: i64
+    register_x: i64,
 }
 
 impl MachineState {
     pub(crate) fn new() -> Self {
         MachineState { cycle: 0, register_x: 1 }
+    }
+}
+
+const DISPLAY_MASK: u64 = 0b1111111111111111111111111111111111111111;
+struct Crt {
+    display_lines: Vec<u64>,
+}
+
+impl Crt {
+
+    fn cycle_mask(cycle: u32) -> u64 {
+        (0b1000000000000000000000000000000000000000 >> (cycle % 40)) & DISPLAY_MASK
+    }
+
+    fn sprite_value(pos: i32) -> u64 {
+        let model = 0b11100000000000000000000000000000000000000_u64;
+        let shifted;
+        if pos < 0 {
+            (shifted, _) = model.overflowing_shl((-pos).try_into().unwrap());
+        } else {
+            (shifted, _) = model.overflowing_shr(pos.try_into().unwrap());
+        }
+        shifted & DISPLAY_MASK
+    }
+
+    fn draw(&mut self, cycle: u32, register_x: u32) {
+        let crt_line = (cycle / 40) as usize;
+        if crt_line + 1 > self.display_lines.len() {
+            self.display_lines.push(0);
+        }
+        let crt_line = self.display_lines.get_mut(crt_line).unwrap();
+        let cycle_mask = Self::cycle_mask(cycle);
+        let sprite = Self::sprite_value(register_x as _);
+        *crt_line |= cycle_mask & sprite;
+    }
+
+    fn display(&self) {
+        for line in &self.display_lines {
+            println!("{}", format!("{:040b}", line)
+            .replace('1', "🎅")
+            .replace('0', "🎄"));
+        }
     }
 }
 
@@ -80,458 +125,22 @@ pub fn part1(instructions: &[Instruction]) -> Option<i64> {
     Some(signal_strengths.iter().sum())
 }
 
-#[cfg(test)]
-mod tests {
+/*
+    The sprite starts drawing at the machine.regster_x pos
+*/
+#[aoc[day10, part2]]
+pub fn part2(instructions: &[Instruction]) -> Option<i64> {
 
-    use super::{input_generator, part1, Instruction};
+    let mut machine_state = MachineState::new();
+    let mut crt: Crt = Crt { display_lines: Vec::new() };
 
-    #[test]
-    fn test_input() { 
-        assert_eq!(input_generator(
-            "addx 15
-addx -11
-addx 6
-addx -3
-addx 5
-addx -1
-addx -8
-addx 13
-addx 4
-noop
-addx -1
-addx 5
-addx -1
-addx 5
-addx -1
-addx 5
-addx -1
-addx 5
-addx -1
-addx -35
-addx 1
-addx 24
-addx -19
-addx 1
-addx 16
-addx -11
-noop
-noop
-addx 21
-addx -15
-noop
-noop
-addx -3
-addx 9
-addx 1
-addx -3
-addx 8
-addx 1
-addx 5
-noop
-noop
-noop
-noop
-noop
-addx -36
-noop
-addx 1
-addx 7
-noop
-noop
-noop
-addx 2
-addx 6
-noop
-noop
-noop
-noop
-noop
-addx 1
-noop
-noop
-addx 7
-addx 1
-noop
-addx -13
-addx 13
-addx 7
-noop
-addx 1
-addx -33
-noop
-noop
-noop
-addx 2
-noop
-noop
-noop
-addx 8
-noop
-addx -1
-addx 2
-addx 1
-noop
-addx 17
-addx -9
-addx 1
-addx 1
-addx -3
-addx 11
-noop
-noop
-addx 1
-noop
-addx 1
-noop
-noop
-addx -13
-addx -19
-addx 1
-addx 3
-addx 26
-addx -30
-addx 12
-addx -1
-addx 3
-addx 1
-noop
-noop
-noop
-addx -9
-addx 18
-addx 1
-addx 2
-noop
-noop
-addx 9
-noop
-noop
-noop
-addx -1
-addx 2
-addx -37
-addx 1
-addx 3
-noop
-addx 15
-addx -21
-addx 22
-addx -6
-addx 1
-noop
-addx 2
-addx 1
-noop
-addx -10
-noop
-noop
-addx 20
-addx 1
-addx 2
-addx 2
-addx -6
-addx -11
-noop
-noop
-noop"),
-            Some(vec![Instruction::Addx(15), 
-            Instruction::Addx(-11), 
-            Instruction::Addx(6), 
-            Instruction::Addx(-3), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(-8), 
-            Instruction::Addx(13),
-            Instruction::Addx(4), 
-            Instruction::Noop, 
-            Instruction::Addx(-1), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(-35), 
-            Instruction::Addx(1), 
-            Instruction::Addx(24), 
-            Instruction::Addx(-19), 
-            Instruction::Addx(1), 
-            Instruction::Addx(16), 
-            Instruction::Addx(-11), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(21), 
-            Instruction::Addx(-15), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-3), 
-            Instruction::Addx(9), 
-            Instruction::Addx(1), 
-            Instruction::Addx(-3), 
-            Instruction::Addx(8), 
-            Instruction::Addx(1), 
-            Instruction::Addx(5), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-36), 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Addx(7), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(2), 
-            Instruction::Addx(6), 
-            Instruction::Noop, 
-            Instruction::Noop,
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(7), 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(-13), 
-            Instruction::Addx(13), 
-            Instruction::Addx(7), 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Addx(-33), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(2), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(8), 
-            Instruction::Noop, 
-            Instruction::Addx(-1), 
-            Instruction::Addx(2), 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(17), 
-            Instruction::Addx(-9), 
-            Instruction::Addx(1), 
-            Instruction::Addx(1),
-            Instruction::Addx(-3), 
-            Instruction::Addx(11), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-13), 
-            Instruction::Addx(-19), 
-            Instruction::Addx(1), 
-            Instruction::Addx(3), 
-            Instruction::Addx(26), 
-            Instruction::Addx(-30),
-            Instruction::Addx(12), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(3), 
-            Instruction::Addx(1),
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-9), 
-            Instruction::Addx(18), 
-            Instruction::Addx(1), 
-            Instruction::Addx(2), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(9), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-1), 
-            Instruction::Addx(2), 
-            Instruction::Addx(-37), 
-            Instruction::Addx(1), 
-            Instruction::Addx(3), 
-            Instruction::Noop, 
-            Instruction::Addx(15), 
-            Instruction::Addx(-21), 
-            Instruction::Addx(22), 
-            Instruction::Addx(-6), 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(2), 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(-10), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(20), 
-            Instruction::Addx(1), 
-            Instruction::Addx(2), 
-            Instruction::Addx(2), 
-            Instruction::Addx(-6), 
-            Instruction::Addx(-11), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop])
-        )
+    for instruction in instructions {
+        for cycle in 1..=instruction.get_cycles() {
+            crt.draw(machine_state.cycle as u32, machine_state.register_x as u32);
+            machine_state.cycle += 1;
+            machine_state.register_x = instruction.execute(machine_state, cycle).unwrap();
+        }
     }
-
-    #[test]
-    fn test_part1() {
-        assert_eq!(part1(&[Instruction::Addx(15), 
-            Instruction::Addx(-11), 
-            Instruction::Addx(6), 
-            Instruction::Addx(-3), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(-8), 
-            Instruction::Addx(13),
-            Instruction::Addx(4), 
-            Instruction::Noop, 
-            Instruction::Addx(-1), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(5), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(-35), 
-            Instruction::Addx(1), 
-            Instruction::Addx(24), 
-            Instruction::Addx(-19), 
-            Instruction::Addx(1), 
-            Instruction::Addx(16), 
-            Instruction::Addx(-11), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(21), 
-            Instruction::Addx(-15), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-3), 
-            Instruction::Addx(9), 
-            Instruction::Addx(1), 
-            Instruction::Addx(-3), 
-            Instruction::Addx(8), 
-            Instruction::Addx(1), 
-            Instruction::Addx(5), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-36), 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Addx(7), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(2), 
-            Instruction::Addx(6), 
-            Instruction::Noop, 
-            Instruction::Noop,
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(7), 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(-13), 
-            Instruction::Addx(13), 
-            Instruction::Addx(7), 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Addx(-33), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(2), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(8), 
-            Instruction::Noop, 
-            Instruction::Addx(-1), 
-            Instruction::Addx(2), 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(17), 
-            Instruction::Addx(-9), 
-            Instruction::Addx(1), 
-            Instruction::Addx(1),
-            Instruction::Addx(-3), 
-            Instruction::Addx(11), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-13), 
-            Instruction::Addx(-19), 
-            Instruction::Addx(1), 
-            Instruction::Addx(3), 
-            Instruction::Addx(26), 
-            Instruction::Addx(-30),
-            Instruction::Addx(12), 
-            Instruction::Addx(-1), 
-            Instruction::Addx(3), 
-            Instruction::Addx(1),
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-9), 
-            Instruction::Addx(18), 
-            Instruction::Addx(1), 
-            Instruction::Addx(2), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(9), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(-1), 
-            Instruction::Addx(2), 
-            Instruction::Addx(-37), 
-            Instruction::Addx(1), 
-            Instruction::Addx(3), 
-            Instruction::Noop, 
-            Instruction::Addx(15), 
-            Instruction::Addx(-21), 
-            Instruction::Addx(22), 
-            Instruction::Addx(-6), 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(2), 
-            Instruction::Addx(1), 
-            Instruction::Noop, 
-            Instruction::Addx(-10), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Addx(20), 
-            Instruction::Addx(1), 
-            Instruction::Addx(2), 
-            Instruction::Addx(2), 
-            Instruction::Addx(-6), 
-            Instruction::Addx(-11), 
-            Instruction::Noop, 
-            Instruction::Noop, 
-            Instruction::Noop]
-        ),
-        Some(13140))
-    }
+    crt.display();
+    Some(machine_state.cycle as i64)
 }
