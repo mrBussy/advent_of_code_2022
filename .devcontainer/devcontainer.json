@@ -2,10 +2,10 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/rust
 {
 	"name": "Rust",
-	"image": "mcr.microsoft.com/devcontainers/rust:1-bullseye",
-	"features": {
+ 	"build": { "dockerfile": "Dockerfile" },
+ 	"features": {
 		"ghcr.io/devcontainers/features/rust:1": {}
-	}
+	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -20,5 +20,6 @@
 	// "customizations": {},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	"remoteUser": "root"
+	// "remoteUser": "vscode"
 }
