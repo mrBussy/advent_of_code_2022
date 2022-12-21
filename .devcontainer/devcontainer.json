@@ -17,8 +17,19 @@
 	// "postCreateCommand": "rustc --version",
 
 	// Configure tool-specific properties.
-	// "customizations": {},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"Swellaby.rust-pack",
+				"JScearcy.rust-doc-viewer",
+				"PolyMeilex.rust-targets",
+				"swellaby.vscode-rust-test-adapter",
+				"rust-lang.rust-analyzer"
 
+			]
+		}
+	},
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	"remoteUser": "root"
 	// "remoteUser": "vscode"
