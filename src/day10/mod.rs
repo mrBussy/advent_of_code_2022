@@ -85,7 +85,7 @@ impl Crt {
 
     fn display(&self) {
         for line in &self.display_lines {
-            println!("{}", format!("{:040b}", line)
+            println!("{}", format!("{line:040b}")
             .replace('1', "🎅")
             .replace('0', "🎄"));
         }
