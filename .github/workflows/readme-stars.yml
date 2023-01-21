@@ -1,6 +1,5 @@
 name: Update README ⭐
 on:
-  schedule:
   workflow_dispatch:
 
 jobs:
